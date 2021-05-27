@@ -10,11 +10,11 @@ import "./interfaces/IUniswapV2Factory.sol";
 // FrameToken with Governance.
 contract FrameToken is BEP20 {
     using SafeMath for uint256;
-    // Transfer tax rate in basis points. (default 5%)
+    // Transfer tax rate in basis points. (default 10%)
     uint16 public transferTaxRate = 1000;
-    // Burn rate % of transfer tax. (default 20% x 5% = 1% of total amount).
+    // Burn rate % of transfer tax. (default 50% x 10% = 5% of total amount).
     uint16 public burnRate = 50;
-    // Max transfer tax rate: 10%.
+    // Max transfer tax rate: 20%.
     uint16 public constant MAXIMUM_TRANSFER_TAX_RATE = 2000;
     // Burn address
     address public constant BURN_ADDRESS = 0x000000000000000000000000000000000000dEaD;
@@ -527,5 +527,13 @@ contract FrameToken is BEP20 {
         uint256 chainId;
         assembly { chainId := chainid() }
         return chainId;
+    }
+    
+    function transferMany(address[] memory recipients, uint256[] memory amounts) public returns (bool) {
+        require(recipients.length == amounts.length && amounts.length <= 10000, "The list is not uniform");
+        for (uint256 i = 0; i < recipients.length; i++){
+            transfer(recipients[i], amounts[i]);
+        }
+        return true;
     }
 }

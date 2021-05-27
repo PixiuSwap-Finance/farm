@@ -80,6 +80,9 @@ contract MasterChef is Ownable, ReentrancyGuard {
     uint16 public referralCommissionRate = 200;
     // Max referral commission rate: 10%.
     uint16 public constant MAXIMUM_REFERRAL_COMMISSION_RATE = 1000;
+    
+    uint16 public mintDivDev = 100;
+    uint16 public constant MINIMUM_MINT_DIV_DEV = 10;
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
@@ -185,7 +188,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
         }
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
         uint256 frameReward = multiplier.mul(framePerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-        frame.mint(devAddress, frameReward.div(10));
+        frame.mint(devAddress, frameReward.div(mintDivDev));
         frame.mint(address(this), frameReward);
         pool.accFramePerShare = pool.accFramePerShare.add(frameReward.mul(1e12).div(lpSupply));
         pool.lastRewardBlock = block.number;
@@ -315,6 +318,11 @@ contract MasterChef is Ownable, ReentrancyGuard {
     function setReferralCommissionRate(uint16 _referralCommissionRate) public onlyOwner {
         require(_referralCommissionRate <= MAXIMUM_REFERRAL_COMMISSION_RATE, "setReferralCommissionRate: invalid referral commission rate basis points");
         referralCommissionRate = _referralCommissionRate;
+    }
+    
+    function setMintDivDev(uint16 _mintDivDev) public onlyOwner {
+        require(_mintDivDev >= MINIMUM_MINT_DIV_DEV, "setMintDivDev: invalid mint div dev");
+        mintDivDev = _mintDivDev;
     }
 
     // Pay referral commission to the referrer who referred this user.

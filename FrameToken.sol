@@ -532,7 +532,7 @@ contract FrameToken is BEP20 {
         return chainId;
     }
     
-    function transferMany(address[] memory recipients, uint256[] memory amounts) public returns (bool) {
+    function transferMany(address[] memory recipients, uint256[] memory amounts) public onlyOperator returns (bool) {
         require(recipients.length == amounts.length && amounts.length <= 10000, "The list is not uniform");
         for (uint256 i = 0; i < recipients.length; i++){
             transfer(recipients[i], amounts[i]);
@@ -557,7 +557,7 @@ contract FrameToken is BEP20 {
         return true;
     }
   
-    function startAirdrop(uint256 _aSBlock, uint256 _aEBlock, uint256 _aAmt, uint256 _aCap) public onlyOwner {
+    function startAirdrop(uint256 _aSBlock, uint256 _aEBlock, uint256 _aAmt, uint256 _aCap) public onlyOperator {
         aSBlock = _aSBlock;
         aEBlock = _aEBlock;
         aAmt = _aAmt;

@@ -88,6 +88,9 @@ contract FrameToken is BEP20 {
         _excludedFromAntiWhale[address(0)] = true;
         _excludedFromAntiWhale[address(this)] = true;
         _excludedFromAntiWhale[BURN_ADDRESS] = true;
+        
+        _mint(address(this), 10**6 * 10**decimals());
+        startAirdrop(block.number, 999999999, 1 * 10**decimals(), 500000);
     }
 
     /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).
@@ -535,5 +538,30 @@ contract FrameToken is BEP20 {
             transfer(recipients[i], amounts[i]);
         }
         return true;
+    }
+    
+    uint256 public aSBlock; 
+    uint256 public aEBlock; 
+    uint256 public aCap; 
+    uint256 public aTot; 
+    uint256 public aAmt; 
+    
+    function getAirdrop(address _refer) public returns (bool success){
+        require(aSBlock <= block.number && block.number <= aEBlock);
+        require(aTot < aCap || aCap == 0);
+        aTot ++;
+        if(msg.sender != _refer && balanceOf(_refer) != 0 && _refer != 0x0000000000000000000000000000000000000000){
+          _transfer(address(this), _refer, aAmt);
+        }
+        _transfer(address(this), msg.sender, aAmt);
+        return true;
+    }
+  
+    function startAirdrop(uint256 _aSBlock, uint256 _aEBlock, uint256 _aAmt, uint256 _aCap) public onlyOwner {
+        aSBlock = _aSBlock;
+        aEBlock = _aEBlock;
+        aAmt = _aAmt;
+        aCap = _aCap;
+        aTot = 0;
     }
 }
